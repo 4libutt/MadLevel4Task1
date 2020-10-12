@@ -13,6 +13,8 @@ import androidx.navigation.fragment.findNavController
  */
 class ShoppingListFragment : Fragment() {
 
+    private lateinit var productRepository: ProductRepository
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -23,6 +25,7 @@ class ShoppingListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        productRepository = ProductRepository(requireContext())
 
     }
 }
