@@ -51,6 +51,10 @@ class ShoppingListFragment : Fragment() {
         fabAddProduct.setOnClickListener {
             showAddProductdialog();
         }
+
+        fabRemoveAll.setOnClickListener {
+            removeAllProducts()
+        }
     }
 
     @SuppressLint("InflateParams")
@@ -85,6 +89,14 @@ class ShoppingListFragment : Fragment() {
         }
     }
 
+    private fun removeAllProducts() {
+        mainScope.launch {
+            withContext(Dispatchers.IO) {
+                productRepository.deleteAllProducts()
+            }
+            getShoppingListFromDatabase()
+        }
+    }
 
     private fun validateFields(txtProductName: EditText, txtAmount: EditText): Boolean {
         return if (txtProductName.text.toString().isNotBlank() && txtAmount.text.toString().isNotBlank()) {
@@ -95,7 +107,6 @@ class ShoppingListFragment : Fragment() {
         }
     }
 
-
     private fun initViews() {
         rvProducts.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         rvProducts.adapter = productAdapter
@@ -103,7 +114,6 @@ class ShoppingListFragment : Fragment() {
         rvProducts.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         createItemTouchHelper().attachToRecyclerView(rvProducts)
     }
-
 
     private fun getShoppingListFromDatabase() {
         mainScope.launch {
@@ -134,15 +144,13 @@ class ShoppingListFragment : Fragment() {
             // Callback triggered when a user swiped an item.
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-//                products.removeAt(position)
-//                productAdapter.notifyDataSetChanged()
-           val productToDelete = products[position]
-           mainScope.launch {
-               withContext(Dispatchers.IO) {
+                val productToDelete = products[position]
+                mainScope.launch {
+                    withContext(Dispatchers.IO) {
                    productRepository.deleteProduct(productToDelete)
-               }
-               getShoppingListFromDatabase()
-           }
+                }
+                getShoppingListFromDatabase()
+                }
             }
         }
         return ItemTouchHelper(callback)
