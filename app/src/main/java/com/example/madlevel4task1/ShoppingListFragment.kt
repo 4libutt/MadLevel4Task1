@@ -134,17 +134,15 @@ class ShoppingListFragment : Fragment() {
             // Callback triggered when a user swiped an item.
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                products.removeAt(position)
-                productAdapter.notifyDataSetChanged()
-//                val productToDelete = products[position]
-//                CoroutineScope(Dispatchers.Main).launch {
-//                    withContext(Dispatchers.IO) {
-//                        productRepository.deleteProduct(productToDelete)
-//                    }
-//                    getShoppingListFromDatabase()
-//                }
-
-
+//                products.removeAt(position)
+//                productAdapter.notifyDataSetChanged()
+           val productToDelete = products[position]
+           mainScope.launch {
+               withContext(Dispatchers.IO) {
+                   productRepository.deleteProduct(productToDelete)
+               }
+               getShoppingListFromDatabase()
+           }
             }
         }
         return ItemTouchHelper(callback)
